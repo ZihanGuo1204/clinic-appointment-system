@@ -1,0 +1,22 @@
+<!doctype html>
+<html>
+<head>
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="topbar">
+    <span class="logo">🏥</span>
+    <div>
+        <div class="title">Clinic Appointment Management System</div>
+        <div class="subtitle-bar">Manage appointments efficiently</div>
+    </div>
+</div>
+
+<div class="container">
+    {% block content %}{% endblock %}
+</div>
+
+</body>
+</html>
