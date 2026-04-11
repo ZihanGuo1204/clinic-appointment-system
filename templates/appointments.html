@@ -1,93 +1,111 @@
 {% extends "base.html" %}
 
 {% block content %}
+<div class="page-wide">
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">Appointments</h1>
+            <p class="page-subtitle">Search, sort, and manage appointment records.</p>
+        </div>
 
-<h1>Appointments</h1>
+        <div class="header-actions">
+            <a href="/" class="button secondary-button">Back to Home</a>
+            <a href="/add" class="button primary-button">Add Appointment</a>
+        </div>
+    </div>
 
-<a href="/" class="button">Back to Home</a>
-<a href="/add" class="button">Add Appointment</a>
+    <section class="panel">
+        <form method="GET" action="/appointments" class="search-grid">
+            <div class="field">
+                <label>Appointment ID</label>
+                <input type="text" name="appointment_id" value="{{ appointment_id }}">
+            </div>
 
-<form method="GET" action="/appointments" class="form-card" style="margin-top:20px;">
-    <p>
-        <label>Appointment ID</label><br>
-        <input type="text" name="appointment_id" value="{{ appointment_id }}">
-    </p>
+            <div class="field">
+                <label>Patient ID</label>
+                <input type="text" name="patient_id" value="{{ patient_id }}">
+            </div>
 
-    <p>
-        <label>Patient ID</label><br>
-        <input type="text" name="patient_id" value="{{ patient_id }}">
-    </p>
+            <div class="field">
+                <label>Provider ID</label>
+                <input type="text" name="provider_id" value="{{ provider_id }}">
+            </div>
 
-    <p>
-        <label>Provider ID</label><br>
-        <input type="text" name="provider_id" value="{{ provider_id }}">
-    </p>
+            <div class="field">
+                <label>Status</label>
+                <select name="status">
+                    <option value="">-- All --</option>
+                    <option value="scheduled" {% if status == "scheduled" %}selected{% endif %}>scheduled</option>
+                    <option value="completed" {% if status == "completed" %}selected{% endif %}>completed</option>
+                    <option value="canceled" {% if status == "canceled" %}selected{% endif %}>canceled</option>
+                    <option value="no_show" {% if status == "no_show" %}selected{% endif %}>no_show</option>
+                </select>
+            </div>
 
-    <p>
-        <label>Status</label><br>
-        <select name="status">
-            <option value="">-- All --</option>
-            <option value="scheduled" {% if status == "scheduled" %}selected{% endif %}>scheduled</option>
-            <option value="completed" {% if status == "completed" %}selected{% endif %}>completed</option>
-            <option value="canceled" {% if status == "canceled" %}selected{% endif %}>canceled</option>
-            <option value="no_show" {% if status == "no_show" %}selected{% endif %}>no_show</option>
-        </select>
-    </p>
+            <div class="field">
+                <label>Sort By</label>
+                <select name="sort_by">
+                    <option value="date_asc" {% if sort_by == "date_asc" %}selected{% endif %}>Date: earliest to latest</option>
+                    <option value="date_desc" {% if sort_by == "date_desc" %}selected{% endif %}>Date: latest to earliest</option>
+                    <option value="patient_az" {% if sort_by == "patient_az" %}selected{% endif %}>Patient name: A-Z</option>
+                    <option value="provider_az" {% if sort_by == "provider_az" %}selected{% endif %}>Provider name: A-Z</option>
+                </select>
+            </div>
 
-    <p>
-        <label>Sort By</label><br>
-        <select name="sort_by">
-            <option value="date_asc" {% if sort_by == "date_asc" %}selected{% endif %}>Date: earliest to latest</option>
-            <option value="date_desc" {% if sort_by == "date_desc" %}selected{% endif %}>Date: latest to earliest</option>
-            <option value="patient_az" {% if sort_by == "patient_az" %}selected{% endif %}>Patient name: A-Z</option>
-            <option value="provider_az" {% if sort_by == "provider_az" %}selected{% endif %}>Provider name: A-Z</option>
-        </select>
-    </p>
+            <div class="search-actions">
+                <button type="submit" class="button primary-button">Search / Filter</button>
+                <a href="/appointments" class="button secondary-button">Clear</a>
+            </div>
+        </form>
+    </section>
 
-    <button type="submit" class="button">Search / Filter</button>
-    <a href="/appointments" class="button">Clear</a>
-</form>
+    {% if message %}
+    <div class="success-banner">{{ message }}</div>
+    {% endif %}
 
-{% if message %}
-<div class="success">{{ message }}</div>
-{% endif %}
+    {% if error %}
+    <div class="error-banner">{{ error }}</div>
+    {% endif %}
 
-{% if error %}
-<div class="error">{{ error }}</div>
-{% endif %}
-
-{% if appointments %}
-<table>
-    <tr>
-        <th>Appointment ID</th>
-        <th>Patient</th>
-        <th>Provider</th>
-        <th>Clinic</th>
-        <th>Start Time</th>
-        <th>End Time</th>
-        <th>Status</th>
-        <th>Action</th>
-    </tr>
-
-    {% for appt in appointments %}
-    <tr>
-        <td>{{ appt.appointment_id }}</td>
-        <td>{{ appt.patient_name }} (ID: {{ appt.patient_id }})</td>
-        <td>{{ appt.provider_name }} (ID: {{ appt.provider_id }})</td>
-        <td>{{ appt.clinic_name }} (ID: {{ appt.clinic_id }})</td>
-        <td>{{ appt.start_time }}</td>
-        <td>{{ appt.end_time }}</td>
-        <td>{{ appt.status }}</td>
-        <td>
-            <form method="POST" action="/delete/{{ appt.appointment_id }}">
-                <button type="submit">Delete</button>
-            </form>
-        </td>
-    </tr>
-    {% endfor %}
-</table>
-{% else %}
-<p>No appointment records to display.</p>
-{% endif %}
-
+    <section class="panel">
+        {% if appointments %}
+        <div class="table-wrap">
+            <table class="styled-table">
+                <thead>
+                    <tr>
+                        <th>Appointment ID</th>
+                        <th>Patient</th>
+                        <th>Provider</th>
+                        <th>Clinic</th>
+                        <th>Start Time</th>
+                        <th>End Time</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for appt in appointments %}
+                    <tr>
+                        <td>{{ appt.appointment_id }}</td>
+                        <td>{{ appt.patient_name }} <span class="muted-text">(ID: {{ appt.patient_id }})</span></td>
+                        <td>{{ appt.provider_name }} <span class="muted-text">(ID: {{ appt.provider_id }})</span></td>
+                        <td>{{ appt.clinic_name }} <span class="muted-text">(ID: {{ appt.clinic_id }})</span></td>
+                        <td>{{ appt.start_time }}</td>
+                        <td>{{ appt.end_time }}</td>
+                        <td><span class="status-pill">{{ appt.status }}</span></td>
+                        <td>
+                            <form method="POST" action="/delete/{{ appt.appointment_id }}">
+                                <button type="submit" class="button danger-button">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">No appointment records to display.</div>
+        {% endif %}
+    </section>
+</div>
 {% endblock %}

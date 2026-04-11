@@ -1,22 +1,26 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Clinic Appointment System</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clinic Appointment Management System</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
+    <header class="topbar">
+        <div class="topbar-inner">
+            <div class="brand">
+                <div class="brand-icon">🏥</div>
+                <div>
+                    <div class="brand-title">Clinic Appointment Management System</div>
+                    <div class="brand-subtitle">Manage appointments efficiently</div>
+                </div>
+            </div>
+        </div>
+    </header>
 
-<div class="topbar">
-    <span class="logo">🏥</span>
-    <div class="topbar-text">
-        <div class="title">Clinic Appointment Management System</div>
-        <div class="subtitle-bar">Manage appointments efficiently</div>
-    </div>
-</div>
-
-<div class="container">
-    {% block content %}{% endblock %}
-</div>
-
+    <main class="page-shell">
+        {% block content %}{% endblock %}
+    </main>
 </body>
 </html>

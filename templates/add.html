@@ -1,86 +1,87 @@
 {% extends "base.html" %}
 
 {% block content %}
+<div class="center-stack">
+    <section class="form-panel">
+        <div class="form-header">
+            <h1 class="page-title center-text">Add Appointment</h1>
+            <p class="page-subtitle center-text">Create a new clinic appointment using guided selections.</p>
+            <div class="center-actions">
+                <a href="/" class="button secondary-button">Back to Home</a>
+            </div>
+        </div>
 
-<h1>Add Appointment</h1>
+        {% if message %}
+        <div class="error-banner">{{ message }}</div>
+        {% endif %}
 
-{% if message %}
-<div class="error">{{ message }}</div>
-{% endif %}
+        <form method="POST" class="modern-form">
+            <div class="field">
+                <label>Appointment ID</label>
+                <input type="number" name="appointment_id" required>
+            </div>
 
-<a href="/" class="button">Back to Home</a>
+            <div class="field">
+                <label>Patient</label>
+                <select name="patient_id" required>
+                    <option value="">-- Select Patient --</option>
+                    {% for p in patients %}
+                    <option value="{{ p.patient_id }}">{{ p.patient_id }} - {{ p.first_name }} {{ p.last_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
 
-<form method="POST" class="form-card">
+            <div class="field">
+                <label>Provider</label>
+                <select name="provider_id" required>
+                    <option value="">-- Select Provider --</option>
+                    {% for p in providers %}
+                    <option value="{{ p.provider_id }}">{{ p.provider_id }} - {{ p.provider_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
 
-    <p>
-        <label>Appointment ID</label><br>
-        <input type="number" name="appointment_id" required>
-    </p>
+            <div class="field">
+                <label>Clinic</label>
+                <select name="clinic_id" required>
+                    <option value="">-- Select Clinic --</option>
+                    {% for c in clinics %}
+                    <option value="{{ c.clinic_id }}">{{ c.clinic_id }} - {{ c.clinic_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
 
-    <p>
-        <label>Patient</label><br>
-        <select name="patient_id" required>
-            <option value="">-- Select Patient --</option>
-            {% for p in patients %}
-                <option value="{{ p.patient_id }}">
-                    {{ p.patient_id }} - {{ p.first_name }} {{ p.last_name }}
-                </option>
-            {% endfor %}
-        </select>
-    </p>
+            <div class="field">
+                <label>Date</label>
+                <input type="date" name="appt_date" required>
+            </div>
 
-    <p>
-        <label>Provider</label><br>
-        <select name="provider_id" required>
-            <option value="">-- Select Provider --</option>
-            {% for p in providers %}
-                <option value="{{ p.provider_id }}">
-                    {{ p.provider_id }} - {{ p.provider_name }}
-                </option>
-            {% endfor %}
-        </select>
-    </p>
+            <div class="field">
+                <label>Time Slot</label>
+                <select name="time_slot" required>
+                    <option value="09:00:00|09:30:00">09:00 - 09:30</option>
+                    <option value="10:00:00|10:30:00">10:00 - 10:30</option>
+                    <option value="11:00:00|11:30:00">11:00 - 11:30</option>
+                    <option value="13:00:00|13:30:00">13:00 - 13:30</option>
+                    <option value="14:00:00|14:30:00">14:00 - 14:30</option>
+                    <option value="15:00:00|15:30:00">15:00 - 15:30</option>
+                </select>
+            </div>
 
-    <p>
-        <label>Clinic</label><br>
-        <select name="clinic_id" required>
-            <option value="">-- Select Clinic --</option>
-            {% for c in clinics %}
-                <option value="{{ c.clinic_id }}">
-                    {{ c.clinic_id }} - {{ c.clinic_name }}
-                </option>
-            {% endfor %}
-        </select>
-    </p>
+            <div class="field">
+                <label>Status</label>
+                <select name="status">
+                    <option value="scheduled">scheduled</option>
+                    <option value="completed">completed</option>
+                    <option value="canceled">canceled</option>
+                    <option value="no_show">no_show</option>
+                </select>
+            </div>
 
-    <p>
-        <label>Date</label><br>
-        <input type="date" name="appt_date" required>
-    </p>
-
-    <p>
-        <label>Time Slot</label><br>
-        <select name="time_slot" required>
-            <option value="09:00:00|09:30:00">09:00 - 09:30</option>
-            <option value="10:00:00|10:30:00">10:00 - 10:30</option>
-            <option value="11:00:00|11:30:00">11:00 - 11:30</option>
-            <option value="13:00:00|13:30:00">13:00 - 13:30</option>
-            <option value="14:00:00|14:30:00">14:00 - 14:30</option>
-            <option value="15:00:00|15:30:00">15:00 - 15:30</option>
-        </select>
-    </p>
-
-    <p>
-        <label>Status</label><br>
-        <select name="status">
-            <option value="scheduled">scheduled</option>
-            <option value="completed">completed</option>
-            <option value="canceled">canceled</option>
-            <option value="no_show">no_show</option>
-        </select>
-    </p>
-
-    <button type="submit" class="button">Add Appointment</button>
-</form>
-
+            <div class="form-submit">
+                <button type="submit" class="button primary-button full-button">Add Appointment</button>
+            </div>
+        </form>
+    </section>
+</div>
 {% endblock %}

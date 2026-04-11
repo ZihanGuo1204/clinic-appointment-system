@@ -1,13 +1,36 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Dashboard</h1>
+<div class="center-stack">
+    <section class="hero-card">
+        <h1 class="page-title center-text">Dashboard</h1>
+        <p class="page-subtitle center-text">
+            Welcome to the clinic system. Choose an action to continue.
+        </p>
 
-{% if message %}
-<div class="success">{{ message }}</div>
-{% endif %}
+        {% if message %}
+        <div class="success-banner">{{ message }}</div>
+        {% endif %}
 
-<a href="/appointments" class="button">View Appointments</a>
-<a href="/add" class="button">Add Appointment</a>
-<a href="/add_patient" class="button">Add Patient</a>
+        <div class="dashboard-grid">
+            <a href="/appointments" class="dashboard-card">
+                <div class="dashboard-card-icon">📋</div>
+                <div class="dashboard-card-title">View Appointments</div>
+                <div class="dashboard-card-desc">Search, filter, sort, and manage appointment records.</div>
+            </a>
+
+            <a href="/add" class="dashboard-card">
+                <div class="dashboard-card-icon">📅</div>
+                <div class="dashboard-card-title">Add Appointment</div>
+                <div class="dashboard-card-desc">Create a new appointment using date and time-slot selection.</div>
+            </a>
+
+            <a href="/add_patient" class="dashboard-card">
+                <div class="dashboard-card-icon">🧑‍⚕️</div>
+                <div class="dashboard-card-title">Add Patient</div>
+                <div class="dashboard-card-desc">Register a new patient before scheduling an appointment.</div>
+            </a>
+        </div>
+    </section>
+</div>
 {% endblock %}

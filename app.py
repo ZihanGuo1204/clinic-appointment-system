@@ -82,7 +82,6 @@ def view_appointments():
                 query += " AND a.status = %s"
                 params.append(status)
 
-            # sort / filter
             if sort_by == "date_desc":
                 query += " ORDER BY a.start_time DESC"
             elif sort_by == "patient_az":
