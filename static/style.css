@@ -4,16 +4,36 @@ body {
     margin: 0;
 }
 
-.navbar {
-    background-color: #2c7be5;
+.topbar {
+    background: linear-gradient(90deg, #1e3a8a, #2563eb);
     color: white;
-    padding: 15px;
-    font-size: 20px;
+    padding: 18px 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.logo {
+    font-size: 28px;
+}
+
+.topbar-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.title {
+    font-size: 24px;
     font-weight: bold;
 }
 
+.subtitle-bar {
+    font-size: 14px;
+    opacity: 0.9;
+}
+
 .container {
-    padding: 20px;
+    padding: 24px;
 }
 
 .button {

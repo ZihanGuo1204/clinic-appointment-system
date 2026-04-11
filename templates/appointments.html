@@ -1,17 +1,14 @@
 {% extends "base.html" %}
 
 {% block content %}
-
-<h2>Appointments</h2>
-
-{% if message %}
-<p style="color: green;"><b>{{ message }}</b></p>
-{% endif %}
+<h1>Appointments</h1>
 
 <a href="/" class="button">Back to Home</a>
 <a href="/add" class="button">Add Appointment</a>
 
-<br><br>
+{% if message %}
+<p style="color: green;"><b>{{ message }}</b></p>
+{% endif %}
 
 <table>
     <tr>
@@ -41,7 +38,5 @@
         </td>
     </tr>
     {% endfor %}
-
 </table>
-
 {% endblock %}
