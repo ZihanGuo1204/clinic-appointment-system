@@ -6,6 +6,37 @@
 <a href="/" class="button">Back to Home</a>
 <a href="/add" class="button">Add Appointment</a>
 
+<form method="GET" action="/appointments" style="margin: 20px 0; background: white; padding: 15px; border-radius: 8px;">
+    <p>
+        <label>Appointment ID:</label>
+        <input type="text" name="appointment_id" value="{{ appointment_id }}">
+    </p>
+
+    <p>
+        <label>Patient ID:</label>
+        <input type="text" name="patient_id" value="{{ patient_id }}">
+    </p>
+
+    <p>
+        <label>Provider ID:</label>
+        <input type="text" name="provider_id" value="{{ provider_id }}">
+    </p>
+
+    <p>
+        <label>Status:</label>
+        <select name="status">
+            <option value="">-- All --</option>
+            <option value="scheduled" {% if status == "scheduled" %}selected{% endif %}>scheduled</option>
+            <option value="completed" {% if status == "completed" %}selected{% endif %}>completed</option>
+            <option value="canceled" {% if status == "canceled" %}selected{% endif %}>canceled</option>
+            <option value="no_show" {% if status == "no_show" %}selected{% endif %}>no_show</option>
+        </select>
+    </p>
+
+    <button type="submit" class="button">Search</button>
+    <a href="/appointments" class="button">Clear</a>
+</form>
+
 {% if message %}
 <p style="color: green;"><b>{{ message }}</b></p>
 {% endif %}

@@ -24,23 +24,56 @@ def home():
 @app.route("/appointments")
 def view_appointments():
     message = request.args.get("message", "")
+
+    appointment_id = request.args.get("appointment_id", "").strip()
+    patient_id = request.args.get("patient_id", "").strip()
+    provider_id = request.args.get("provider_id", "").strip()
+    status = request.args.get("status", "").strip()
+
     try:
         conn = get_connection()
         with conn.cursor() as cursor:
-            cursor.execute("""
+            query = """
                 SELECT appointment_id, patient_id, provider_id, clinic_id,
                        start_time, end_time, status
                 FROM APPOINTMENT
-                ORDER BY appointment_id
-            """)
+                WHERE 1=1
+            """
+            params = []
+
+            if appointment_id:
+                query += " AND appointment_id = %s"
+                params.append(appointment_id)
+
+            if patient_id:
+                query += " AND patient_id = %s"
+                params.append(patient_id)
+
+            if provider_id:
+                query += " AND provider_id = %s"
+                params.append(provider_id)
+
+            if status:
+                query += " AND status = %s"
+                params.append(status)
+
+            query += " ORDER BY appointment_id"
+
+            cursor.execute(query, params)
             appointments = cursor.fetchall()
+
         conn.close()
 
         return render_template(
             "appointments.html",
             appointments=appointments,
-            message=message
+            message=message,
+            appointment_id=appointment_id,
+            patient_id=patient_id,
+            provider_id=provider_id,
+            status=status
         )
+
     except Exception as e:
         return f"Error loading appointments: {e}"
 
