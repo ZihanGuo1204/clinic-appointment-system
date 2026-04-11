@@ -3,6 +3,11 @@
 {% block content %}
 <h1>Dashboard</h1>
 
+{% if message %}
+<div class="success">{{ message }}</div>
+{% endif %}
+
 <a href="/appointments" class="button">View Appointments</a>
 <a href="/add" class="button">Add Appointment</a>
+<a href="/add_patient" class="button">Add Patient</a>
 {% endblock %}

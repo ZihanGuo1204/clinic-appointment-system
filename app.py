@@ -18,7 +18,8 @@ def get_connection():
 
 @app.route("/")
 def home():
-    return render_template("home.html")
+    message = request.args.get("message", "")
+    return render_template("home.html", message=message)
 
 
 @app.route("/appointments")
@@ -119,10 +120,35 @@ def view_appointments():
 @app.route("/add", methods=["GET", "POST"])
 def add_appointment():
     message = ""
+    conn = None
 
-    if request.method == "POST":
-        conn = None
-        try:
+    try:
+        conn = get_connection()
+
+        with conn.cursor() as cursor:
+            cursor.execute("""
+                SELECT p.patient_id, pe.first_name, pe.last_name
+                FROM PATIENT p
+                JOIN PERSON pe ON p.patient_id = pe.person_id
+                ORDER BY p.patient_id
+            """)
+            patients = cursor.fetchall()
+
+            cursor.execute("""
+                SELECT provider_id, provider_name
+                FROM PROVIDER
+                ORDER BY provider_id
+            """)
+            providers = cursor.fetchall()
+
+            cursor.execute("""
+                SELECT clinic_id, clinic_name
+                FROM CLINIC
+                ORDER BY clinic_id
+            """)
+            clinics = cursor.fetchall()
+
+        if request.method == "POST":
             appointment_id = int(request.form["appointment_id"])
             patient_id = int(request.form["patient_id"])
             provider_id = int(request.form["provider_id"])
@@ -136,14 +162,12 @@ def add_appointment():
             start_time = f"{appt_date} {start_clock}"
             end_time = f"{appt_date} {end_clock}"
 
-            conn = get_connection()
             with conn.cursor() as cursor:
-                # Prevent double booking for the same provider and start time
                 cursor.execute("""
                     SELECT *
                     FROM APPOINTMENT
                     WHERE provider_id = %s
-                      AND start_time = %s
+                    AND start_time = %s
                 """, (provider_id, start_time))
                 existing = cursor.fetchone()
 
@@ -152,8 +176,7 @@ def add_appointment():
 
                 cursor.execute("""
                     INSERT INTO APPOINTMENT
-                    (appointment_id, patient_id, provider_id, clinic_id,
-                     start_time, end_time, status, check_in_time, actual_start_time)
+                    (appointment_id, patient_id, provider_id, clinic_id, start_time, end_time, status, check_in_time, actual_start_time)
                     VALUES (%s, %s, %s, %s, %s, %s, %s, NULL, NULL)
                 """, (
                     appointment_id,
@@ -169,13 +192,105 @@ def add_appointment():
             conn.close()
             return redirect(url_for("view_appointments", message="Appointment added successfully."))
 
+        conn.close()
+        return render_template(
+            "add.html",
+            message=message,
+            patients=patients,
+            providers=providers,
+            clinics=clinics
+        )
+
+    except Exception as e:
+        if conn:
+            conn.rollback()
+            conn.close()
+
+        try:
+            conn = get_connection()
+            with conn.cursor() as cursor:
+                cursor.execute("""
+                    SELECT p.patient_id, pe.first_name, pe.last_name
+                    FROM PATIENT p
+                    JOIN PERSON pe ON p.patient_id = pe.person_id
+                    ORDER BY p.patient_id
+                """)
+                patients = cursor.fetchall()
+
+                cursor.execute("""
+                    SELECT provider_id, provider_name
+                    FROM PROVIDER
+                    ORDER BY provider_id
+                """)
+                providers = cursor.fetchall()
+
+                cursor.execute("""
+                    SELECT clinic_id, clinic_name
+                    FROM CLINIC
+                    ORDER BY clinic_id
+                """)
+                clinics = cursor.fetchall()
+            conn.close()
+        except Exception:
+            patients, providers, clinics = [], [], []
+
+        return render_template(
+            "add.html",
+            message=f"Error: {e}",
+            patients=patients,
+            providers=providers,
+            clinics=clinics
+        )
+
+
+@app.route("/add_patient", methods=["GET", "POST"])
+def add_patient():
+    message = ""
+    conn = None
+
+    if request.method == "POST":
+        try:
+            patient_id = int(request.form["patient_id"])
+            first_name = request.form["first_name"].strip()
+            last_name = request.form["last_name"].strip()
+            email = request.form["email"].strip()
+
+            if not first_name or not last_name or not email:
+                raise Exception("All fields are required.")
+
+            conn = get_connection()
+            with conn.cursor() as cursor:
+                cursor.execute(
+                    "SELECT * FROM PERSON WHERE person_id = %s",
+                    (patient_id,)
+                )
+                existing_person = cursor.fetchone()
+
+                if existing_person:
+                    raise Exception("This Patient ID already exists.")
+
+                cursor.execute("""
+                    INSERT INTO PERSON (person_id, first_name, last_name, email)
+                    VALUES (%s, %s, %s, %s)
+                """, (patient_id, first_name, last_name, email))
+
+                cursor.execute("""
+                    INSERT INTO PATIENT (patient_id)
+                    VALUES (%s)
+                """, (patient_id,))
+
+                conn.commit()
+
+            conn.close()
+            return redirect(url_for("home", message="Patient added successfully."))
+
         except Exception as e:
             if conn:
                 conn.rollback()
                 conn.close()
             message = f"Error: {e}"
 
-    return render_template("add.html", message=message)
+    return render_template("add_patient.html", message=message)
 
 
 @app.route("/delete/<int:appointment_id>", methods=["POST"])

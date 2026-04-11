@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Add Patient</h1>
+
+<a href="/" class="button">Back to Home</a>
+
+{% if message %}
+<div class="{% if 'Error' in message %}error{% else %}success{% endif %}">
+    {{ message }}
+</div>
+{% endif %}
+
+<form method="POST" class="form-card">
+
+    <p>
+        <label>Patient ID</label><br>
+        <input type="number" name="patient_id" required>
+    </p>
+
+    <p>
+        <label>First Name</label><br>
+        <input type="text" name="first_name" required>
+    </p>
+
+    <p>
+        <label>Last Name</label><br>
+        <input type="text" name="last_name" required>
+    </p>
+
+    <p>
+        <label>Email</label><br>
+        <input type="email" name="email" required>
+    </p>
+
+    <button type="submit" class="button">Add Patient</button>
+</form>
+
+{% endblock %}
