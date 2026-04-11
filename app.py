@@ -31,6 +31,7 @@ def view_appointments():
     patient_id = request.args.get("patient_id", "").strip()
     provider_id = request.args.get("provider_id", "").strip()
     status = request.args.get("status", "").strip()
+    sort_by = request.args.get("sort_by", "date_asc").strip()
 
     try:
         if appointment_id and not appointment_id.isdigit():
@@ -45,30 +46,51 @@ def view_appointments():
         conn = get_connection()
         with conn.cursor() as cursor:
             query = """
-                SELECT appointment_id, patient_id, provider_id, clinic_id,
-                       start_time, end_time, status
-                FROM APPOINTMENT
+                SELECT
+                    a.appointment_id,
+                    a.patient_id,
+                    CONCAT(pe.first_name, ' ', pe.last_name) AS patient_name,
+                    a.provider_id,
+                    pr.provider_name,
+                    a.clinic_id,
+                    c.clinic_name,
+                    a.start_time,
+                    a.end_time,
+                    a.status
+                FROM APPOINTMENT a
+                JOIN PATIENT pa ON a.patient_id = pa.patient_id
+                JOIN PERSON pe ON pa.patient_id = pe.person_id
+                JOIN PROVIDER pr ON a.provider_id = pr.provider_id
+                JOIN CLINIC c ON a.clinic_id = c.clinic_id
                 WHERE 1=1
             """
             params = []
 
             if appointment_id:
-                query += " AND appointment_id = %s"
+                query += " AND a.appointment_id = %s"
                 params.append(appointment_id)
 
             if patient_id:
-                query += " AND patient_id = %s"
+                query += " AND a.patient_id = %s"
                 params.append(patient_id)
 
             if provider_id:
-                query += " AND provider_id = %s"
+                query += " AND a.provider_id = %s"
                 params.append(provider_id)
 
             if status:
-                query += " AND status = %s"
+                query += " AND a.status = %s"
                 params.append(status)
 
-            query += " ORDER BY appointment_id"
+            # sort / filter
+            if sort_by == "date_desc":
+                query += " ORDER BY a.start_time DESC"
+            elif sort_by == "patient_az":
+                query += " ORDER BY pe.first_name ASC, pe.last_name ASC"
+            elif sort_by == "provider_az":
+                query += " ORDER BY pr.provider_name ASC"
+            else:
+                query += " ORDER BY a.start_time ASC"
 
             cursor.execute(query, params)
             appointments = cursor.fetchall()
@@ -87,7 +109,8 @@ def view_appointments():
             appointment_id=appointment_id,
             patient_id=patient_id,
             provider_id=provider_id,
-            status=status
+            status=status,
+            sort_by=sort_by
         )
 
     except ValueError as ve:
@@ -100,7 +123,8 @@ def view_appointments():
             appointment_id=appointment_id,
             patient_id=patient_id,
             provider_id=provider_id,
-            status=status
+            status=status,
+            sort_by=sort_by
         )
 
     except Exception as e:
@@ -113,7 +137,8 @@ def view_appointments():
             appointment_id=appointment_id,
             patient_id=patient_id,
             provider_id=provider_id,
-            status=status
+            status=status,
+            sort_by=sort_by
         )
 
 
