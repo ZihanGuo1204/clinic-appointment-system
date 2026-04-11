@@ -38,7 +38,11 @@
 </form>
 
 {% if message %}
-<p style="color: green;"><b>{{ message }}</b></p>
+<p style="color: green; font-weight: bold;">{{ message }}</p>
+{% endif %}
+
+{% if error %}
+<p style="color: red; font-weight: bold;">{{ error }}</p>
 {% endif %}
 
 <table>

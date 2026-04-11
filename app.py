@@ -24,6 +24,7 @@ def home():
 @app.route("/appointments")
 def view_appointments():
     message = request.args.get("message", "")
+    error = ""
 
     appointment_id = request.args.get("appointment_id", "").strip()
     patient_id = request.args.get("patient_id", "").strip()
@@ -31,6 +32,15 @@ def view_appointments():
     status = request.args.get("status", "").strip()
 
     try:
+        if appointment_id and not appointment_id.isdigit():
+            raise ValueError("Appointment ID must be a number.")
+
+        if patient_id and not patient_id.isdigit():
+            raise ValueError("Patient ID must be a number.")
+
+        if provider_id and not provider_id.isdigit():
+            raise ValueError("Provider ID must be a number.")
+
         conn = get_connection()
         with conn.cursor() as cursor:
             query = """
@@ -64,10 +74,28 @@ def view_appointments():
 
         conn.close()
 
+        searched = appointment_id or patient_id or provider_id or status
+        if searched and not appointments:
+            message = "No appointments found matching your search criteria."
+
         return render_template(
             "appointments.html",
             appointments=appointments,
             message=message,
+            error=error,
+            appointment_id=appointment_id,
+            patient_id=patient_id,
+            provider_id=provider_id,
+            status=status
+        )
+
+    except ValueError as ve:
+        error = str(ve)
+        return render_template(
+            "appointments.html",
+            appointments=[],
+            message="",
+            error=error,
             appointment_id=appointment_id,
             patient_id=patient_id,
             provider_id=provider_id,
@@ -75,7 +103,17 @@ def view_appointments():
         )
 
     except Exception as e:
-        return f"Error loading appointments: {e}"
+        error = f"Error loading appointments: {e}"
+        return render_template(
+            "appointments.html",
+            appointments=[],
+            message="",
+            error=error,
+            appointment_id=appointment_id,
+            patient_id=patient_id,
+            provider_id=provider_id,
+            status=status
+        )
 
 
 @app.route("/add", methods=["GET", "POST"])
