@@ -1,29 +1,30 @@
 {% extends "base.html" %}
 
 {% block content %}
+
 <h1>Appointments</h1>
 
 <a href="/" class="button">Back to Home</a>
 <a href="/add" class="button">Add Appointment</a>
 
-<form method="GET" action="/appointments" style="margin: 20px 0; background: white; padding: 15px; border-radius: 8px;">
+<form method="GET" action="/appointments" class="form-card" style="margin-top:20px;">
     <p>
-        <label>Appointment ID:</label>
+        <label>Appointment ID</label><br>
         <input type="text" name="appointment_id" value="{{ appointment_id }}">
     </p>
 
     <p>
-        <label>Patient ID:</label>
+        <label>Patient ID</label><br>
         <input type="text" name="patient_id" value="{{ patient_id }}">
     </p>
 
     <p>
-        <label>Provider ID:</label>
+        <label>Provider ID</label><br>
         <input type="text" name="provider_id" value="{{ provider_id }}">
     </p>
 
     <p>
-        <label>Status:</label>
+        <label>Status</label><br>
         <select name="status">
             <option value="">-- All --</option>
             <option value="scheduled" {% if status == "scheduled" %}selected{% endif %}>scheduled</option>
@@ -33,24 +34,35 @@
         </select>
     </p>
 
-    <button type="submit" class="button">Search</button>
+    <p>
+        <label>Sort By</label><br>
+        <select name="sort_by">
+            <option value="date_asc" {% if sort_by == "date_asc" %}selected{% endif %}>Date: earliest to latest</option>
+            <option value="date_desc" {% if sort_by == "date_desc" %}selected{% endif %}>Date: latest to earliest</option>
+            <option value="patient_az" {% if sort_by == "patient_az" %}selected{% endif %}>Patient name: A-Z</option>
+            <option value="provider_az" {% if sort_by == "provider_az" %}selected{% endif %}>Provider name: A-Z</option>
+        </select>
+    </p>
+
+    <button type="submit" class="button">Search / Filter</button>
     <a href="/appointments" class="button">Clear</a>
 </form>
 
 {% if message %}
-<p style="color: green; font-weight: bold;">{{ message }}</p>
+<div class="success">{{ message }}</div>
 {% endif %}
 
 {% if error %}
-<p style="color: red; font-weight: bold;">{{ error }}</p>
+<div class="error">{{ error }}</div>
 {% endif %}
 
+{% if appointments %}
 <table>
     <tr>
-        <th>ID</th>
-        <th>Patient ID</th>
-        <th>Provider ID</th>
-        <th>Clinic ID</th>
+        <th>Appointment ID</th>
+        <th>Patient</th>
+        <th>Provider</th>
+        <th>Clinic</th>
         <th>Start Time</th>
         <th>End Time</th>
         <th>Status</th>
@@ -60,9 +72,9 @@
     {% for appt in appointments %}
     <tr>
         <td>{{ appt.appointment_id }}</td>
-        <td>{{ appt.patient_id }}</td>
-        <td>{{ appt.provider_id }}</td>
-        <td>{{ appt.clinic_id }}</td>
+        <td>{{ appt.patient_name }} (ID: {{ appt.patient_id }})</td>
+        <td>{{ appt.provider_name }} (ID: {{ appt.provider_id }})</td>
+        <td>{{ appt.clinic_name }} (ID: {{ appt.clinic_id }})</td>
         <td>{{ appt.start_time }}</td>
         <td>{{ appt.end_time }}</td>
         <td>{{ appt.status }}</td>
@@ -74,4 +86,8 @@
     </tr>
     {% endfor %}
 </table>
+{% else %}
+<p>No appointment records to display.</p>
+{% endif %}
+
 {% endblock %}
