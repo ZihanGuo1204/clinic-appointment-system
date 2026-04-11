@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Add Appointment</h2>
+
+{% if message %}
+<p style="color:red;"><b>{{ message }}</b></p>
+{% endif %}
+
+<a href="/" class="button">Back to Home</a>
+
+<form method="POST">
+
+    <p>Appointment ID: <input type="number" name="appointment_id" required></p>
+    <p>Patient ID: <input type="number" name="patient_id" required></p>
+    <p>Provider ID: <input type="number" name="provider_id" required></p>
+    <p>Clinic ID: <input type="number" name="clinic_id" required></p>
+
+    <p>Date:
+        <input type="date" name="appt_date" required>
+    </p>
+
+    <p>Time Slot:
+        <select name="time_slot" required>
+            <option value="09:00:00|09:30:00">09:00 - 09:30</option>
+            <option value="10:00:00|10:30:00">10:00 - 10:30</option>
+            <option value="11:00:00|11:30:00">11:00 - 11:30</option>
+            <option value="13:00:00|13:30:00">13:00 - 13:30</option>
+            <option value="14:00:00|14:30:00">14:00 - 14:30</option>
+            <option value="15:00:00|15:30:00">15:00 - 15:30</option>
+        </select>
+    </p>
+
+    <p>Status:
+        <select name="status">
+            <option value="scheduled">scheduled</option>
+            <option value="completed">completed</option>
+            <option value="cancelled">cancelled</option>
+            <option value="no_show">no_show</option>
+        </select>
+    </p>
+
+    <button type="submit">Add Appointment</button>
+
+</form>
+
+{% endblock %}

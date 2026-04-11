@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Appointments</h2>
+
+{% if message %}
+<p style="color: green;"><b>{{ message }}</b></p>
+{% endif %}
+
+<a href="/" class="button">Back to Home</a>
+<a href="/add" class="button">Add Appointment</a>
+
+<br><br>
+
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Patient ID</th>
+        <th>Provider ID</th>
+        <th>Clinic ID</th>
+        <th>Start Time</th>
+        <th>End Time</th>
+        <th>Status</th>
+        <th>Action</th>
+    </tr>
+
+    {% for appt in appointments %}
+    <tr>
+        <td>{{ appt.appointment_id }}</td>
+        <td>{{ appt.patient_id }}</td>
+        <td>{{ appt.provider_id }}</td>
+        <td>{{ appt.clinic_id }}</td>
+        <td>{{ appt.start_time }}</td>
+        <td>{{ appt.end_time }}</td>
+        <td>{{ appt.status }}</td>
+        <td>
+            <form method="POST" action="/delete/{{ appt.appointment_id }}">
+                <button type="submit">Delete</button>
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+
+</table>
+
+{% endblock %}
