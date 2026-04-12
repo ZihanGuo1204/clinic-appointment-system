@@ -337,6 +337,49 @@ def delete_appointment(appointment_id):
             conn.close()
         return f"Error deleting appointment: {e}"
 
+@app.route("/update/<int:appointment_id>", methods=["GET", "POST"])
+def update_appointment(appointment_id):
+    conn = None
+    try:
+        conn = get_connection()
+
+        if request.method == "POST":
+            new_status = request.form["status"].strip()
+
+            if new_status not in ["scheduled", "completed", "canceled", "no_show"]:
+                raise Exception("Invalid status selected.")
+
+            with conn.cursor() as cursor:
+                cursor.execute("""
+                    UPDATE APPOINTMENT
+                    SET status = %s
+                    WHERE appointment_id = %s
+                """, (new_status, appointment_id))
+                conn.commit()
+
+            conn.close()
+            return redirect(url_for("view_appointments", message="Appointment updated successfully."))
+
+        with conn.cursor() as cursor:
+            cursor.execute("""
+                SELECT appointment_id, status
+                FROM APPOINTMENT
+                WHERE appointment_id = %s
+            """, (appointment_id,))
+            appointment = cursor.fetchone()
+
+        conn.close()
+
+        if not appointment:
+            return redirect(url_for("view_appointments", message="Appointment not found."))
+
+        return render_template("update_appointment.html", appointment=appointment)
+
+    except Exception as e:
+        if conn:
+            conn.rollback()
+            conn.close()
+        return f"Error updating appointment: {e}"
 
 if __name__ == "__main__":
     app.run(debug=True)

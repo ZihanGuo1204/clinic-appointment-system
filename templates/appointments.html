@@ -80,7 +80,7 @@
                         <th>Start Time</th>
                         <th>End Time</th>
                         <th>Status</th>
-                        <th>Action</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -94,9 +94,13 @@
                         <td>{{ appt.end_time }}</td>
                         <td><span class="status-pill">{{ appt.status }}</span></td>
                         <td>
-                            <form method="POST" action="/delete/{{ appt.appointment_id }}">
-                                <button type="submit" class="button danger-button">Delete</button>
-                            </form>
+                            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                                <a href="/update/{{ appt.appointment_id }}" class="button secondary-button">Update</a>
+
+                                <form method="POST" action="/delete/{{ appt.appointment_id }}">
+                                    <button type="submit" class="button danger-button">Delete</button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                     {% endfor %}

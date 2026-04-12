@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="center-stack">
+    <section class="form-panel">
+        <div class="form-header">
+            <h1 class="page-title center-text">Update Appointment</h1>
+            <p class="page-subtitle center-text">
+                Change the status for appointment {{ appointment.appointment_id }}.
+            </p>
+            <div class="center-actions">
+                <a href="/appointments" class="button secondary-button">Back to Appointments</a>
+            </div>
+        </div>
+
+        <form method="POST" class="modern-form">
+            <div class="field">
+                <label>Appointment ID</label>
+                <input type="text" value="{{ appointment.appointment_id }}" disabled>
+            </div>
+
+            <div class="field">
+                <label>Status</label>
+                <select name="status" required>
+                    <option value="scheduled" {% if appointment.status == "scheduled" %}selected{% endif %}>scheduled</option>
+                    <option value="completed" {% if appointment.status == "completed" %}selected{% endif %}>completed</option>
+                    <option value="canceled" {% if appointment.status == "canceled" %}selected{% endif %}>canceled</option>
+                    <option value="no_show" {% if appointment.status == "no_show" %}selected{% endif %}>no_show</option>
+                </select>
+            </div>
+
+            <div class="form-submit">
+                <button type="submit" class="button primary-button full-button">Update Appointment</button>
+            </div>
+        </form>
+    </section>
+</div>
+{% endblock %}
