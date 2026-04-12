@@ -1,13 +1,17 @@
 from flask import Flask, request, redirect, url_for, render_template
 import pymysql
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
 
 db_config = {
-    "host": "136.119.35.161",
-    "user": "appuser",
-    "password": "App123456!",
-    "database": "clinic_appointment_db",
+    "host": os.getenv("DB_HOST"),
+    "user": os.getenv("DB_USER"),
+    "password": os.getenv("DB_PASSWORD"),
+    "database": os.getenv("DB_NAME"),
     "cursorclass": pymysql.cursors.DictCursor
 }
 
