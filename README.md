@@ -6,7 +6,9 @@ A full-stack clinic appointment management system using Flask, MySQL, and Google
 
 ## Author
 - Zihan Guo
-
+- Letong Yi
+- Xinle Xu
+- Xiangran Zhou
 ---
 
 ## Overview
