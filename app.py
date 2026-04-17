@@ -341,24 +341,82 @@ def delete_appointment(appointment_id):
             conn.close()
         return f"Error deleting appointment: {e}"
 
+
 @app.route("/update/<int:appointment_id>", methods=["GET", "POST"])
 def update_appointment(appointment_id):
     conn = None
     try:
         conn = get_connection()
 
-        if request.method == "POST":
-            new_status = request.form["status"].strip()
+        with conn.cursor() as cursor:
+            cursor.execute("""
+                SELECT p.patient_id, pe.first_name, pe.last_name
+                FROM PATIENT p
+                JOIN PERSON pe ON p.patient_id = pe.person_id
+                ORDER BY p.patient_id
+            """)
+            patients = cursor.fetchall()
 
-            if new_status not in ["scheduled", "completed", "canceled", "no_show"]:
+            cursor.execute("""
+                SELECT provider_id, provider_name
+                FROM PROVIDER
+                ORDER BY provider_id
+            """)
+            providers = cursor.fetchall()
+
+            cursor.execute("""
+                SELECT clinic_id, clinic_name
+                FROM CLINIC
+                ORDER BY clinic_id
+            """)
+            clinics = cursor.fetchall()
+
+        if request.method == "POST":
+            patient_id = int(request.form["patient_id"])
+            provider_id = int(request.form["provider_id"])
+            clinic_id = int(request.form["clinic_id"])
+            appt_date = request.form["appt_date"]
+            time_slot = request.form["time_slot"]
+            status = request.form["status"].strip()
+
+            if status not in ["scheduled", "completed", "canceled", "no_show"]:
                 raise Exception("Invalid status selected.")
+
+            start_clock, end_clock = time_slot.split("|")
+            start_time = f"{appt_date} {start_clock}"
+            end_time = f"{appt_date} {end_clock}"
 
             with conn.cursor() as cursor:
                 cursor.execute("""
+                    SELECT *
+                    FROM APPOINTMENT
+                    WHERE provider_id = %s
+                      AND start_time = %s
+                      AND appointment_id <> %s
+                """, (provider_id, start_time, appointment_id))
+                existing = cursor.fetchone()
+
+                if existing:
+                    raise Exception("This time slot is already booked for this provider.")
+
+                cursor.execute("""
                     UPDATE APPOINTMENT
-                    SET status = %s
+                    SET patient_id = %s,
+                        provider_id = %s,
+                        clinic_id = %s,
+                        start_time = %s,
+                        end_time = %s,
+                        status = %s
                     WHERE appointment_id = %s
-                """, (new_status, appointment_id))
+                """, (
+                    patient_id,
+                    provider_id,
+                    clinic_id,
+                    start_time,
+                    end_time,
+                    status,
+                    appointment_id
+                ))
                 conn.commit()
 
             conn.close()
@@ -366,7 +424,8 @@ def update_appointment(appointment_id):
 
         with conn.cursor() as cursor:
             cursor.execute("""
-                SELECT appointment_id, status
+                SELECT appointment_id, patient_id, provider_id, clinic_id,
+                       start_time, end_time, status
                 FROM APPOINTMENT
                 WHERE appointment_id = %s
             """, (appointment_id,))
@@ -377,13 +436,27 @@ def update_appointment(appointment_id):
         if not appointment:
             return redirect(url_for("view_appointments", message="Appointment not found."))
 
-        return render_template("update_appointment.html", appointment=appointment)
+        appt_date = appointment["start_time"].strftime("%Y-%m-%d")
+        start_clock = appointment["start_time"].strftime("%H:%M:%S")
+        end_clock = appointment["end_time"].strftime("%H:%M:%S")
+        current_time_slot = f"{start_clock}|{end_clock}"
+
+        return render_template(
+            "update_appointment.html",
+            appointment=appointment,
+            patients=patients,
+            providers=providers,
+            clinics=clinics,
+            appt_date=appt_date,
+            current_time_slot=current_time_slot
+        )
 
     except Exception as e:
         if conn:
             conn.rollback()
             conn.close()
         return f"Error updating appointment: {e}"
+
 
 if __name__ == "__main__":
     app.run(debug=True)

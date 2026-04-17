@@ -6,7 +6,7 @@
         <div class="form-header">
             <h1 class="page-title center-text">Update Appointment</h1>
             <p class="page-subtitle center-text">
-                Change the status for appointment {{ appointment.appointment_id }}.
+                Update the details for appointment {{ appointment.appointment_id }}.
             </p>
             <div class="center-actions">
                 <a href="/appointments" class="button secondary-button">Back to Appointments</a>
@@ -17,6 +17,59 @@
             <div class="field">
                 <label>Appointment ID</label>
                 <input type="text" value="{{ appointment.appointment_id }}" disabled>
+            </div>
+
+            <div class="field">
+                <label>Patient</label>
+                <select name="patient_id" required>
+                    {% for p in patients %}
+                    <option value="{{ p.patient_id }}"
+                        {% if p.patient_id == appointment.patient_id %}selected{% endif %}>
+                        {{ p.patient_id }} - {{ p.first_name }} {{ p.last_name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="field">
+                <label>Provider</label>
+                <select name="provider_id" required>
+                    {% for p in providers %}
+                    <option value="{{ p.provider_id }}"
+                        {% if p.provider_id == appointment.provider_id %}selected{% endif %}>
+                        {{ p.provider_id }} - {{ p.provider_name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="field">
+                <label>Clinic</label>
+                <select name="clinic_id" required>
+                    {% for c in clinics %}
+                    <option value="{{ c.clinic_id }}"
+                        {% if c.clinic_id == appointment.clinic_id %}selected{% endif %}>
+                        {{ c.clinic_id }} - {{ c.clinic_name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="field">
+                <label>Date</label>
+                <input type="date" name="appt_date" value="{{ appt_date }}" required>
+            </div>
+
+            <div class="field">
+                <label>Time Slot</label>
+                <select name="time_slot" required>
+                    <option value="09:00:00|09:30:00" {% if current_time_slot == "09:00:00|09:30:00" %}selected{% endif %}>09:00 - 09:30</option>
+                    <option value="10:00:00|10:30:00" {% if current_time_slot == "10:00:00|10:30:00" %}selected{% endif %}>10:00 - 10:30</option>
+                    <option value="11:00:00|11:30:00" {% if current_time_slot == "11:00:00|11:30:00" %}selected{% endif %}>11:00 - 11:30</option>
+                    <option value="13:00:00|13:30:00" {% if current_time_slot == "13:00:00|13:30:00" %}selected{% endif %}>13:00 - 13:30</option>
+                    <option value="14:00:00|14:30:00" {% if current_time_slot == "14:00:00|14:30:00" %}selected{% endif %}>14:00 - 14:30</option>
+                    <option value="15:00:00|15:30:00" {% if current_time_slot == "15:00:00|15:30:00" %}selected{% endif %}>15:00 - 15:30</option>
+                </select>
             </div>
 
             <div class="field">
