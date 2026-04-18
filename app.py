@@ -386,6 +386,7 @@ def update_appointment(appointment_id):
             start_time = f"{appt_date} {start_clock}"
             end_time = f"{appt_date} {end_clock}"
 
+            #double checking
             with conn.cursor() as cursor:
                 cursor.execute("""
                     SELECT *
